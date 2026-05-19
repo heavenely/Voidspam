@@ -65,12 +65,14 @@ local projectiles = {}
 CloseBtn.MouseButton1Click:Connect(function()
 	isRunning = false
 
-	local char = lp.Character
-	local root = char and char:FindFirstChild("HumanoidRootPart")
+	if voidActive and preVoidCFrame then
+		local char = lp.Character
+		local root = char and char:FindFirstChild("HumanoidRootPart")
 
-	if voidActive and preVoidCFrame and root then
-		root.Velocity = Vector3.new(0, 0, 0)
-		root.CFrame = preVoidCFrame
+		if root then
+			root.Velocity = Vector3.new(0, 0, 0)
+			root.CFrame = preVoidCFrame
+		end
 	end
 
 	if slingConn then
@@ -88,23 +90,11 @@ CloseBtn.MouseButton1Click:Connect(function()
 	ScreenGui:Destroy()
 end)
 
-local function updateButtonVisuals(btn, enabled, text)
-	if enabled then
-		btn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-		btn.TextColor3 = Color3.fromRGB(0, 0, 0)
-	else
-		btn.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
-		btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-	end
-
-	btn.Text = text
-end
-
--- VOIDSPAM BUTTON
+-- ORIGINAL VOIDSPAM BUTTON (UNCHANGED)
 
 local VoidBtn = Instance.new("TextButton", MainFrame)
 VoidBtn.Size = UDim2.new(0.9, 0, 0, 45)
-VoidBtn.Position = UDim2.new(0.05, 0, 0.33, 0)
+VoidBtn.Position = UDim2.new(0.05, 0, 0.35, 0)
 VoidBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
 VoidBtn.Font = Enum.Font.GothamBold
 VoidBtn.Text = "Voidspam"
@@ -112,6 +102,18 @@ VoidBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 VoidBtn.TextSize = 16
 
 Instance.new("UICorner", VoidBtn).CornerRadius = UDim.new(0, 8)
+
+local function updateButtonVisuals(btn, isEnabled, defaultText)
+	if isEnabled then
+		btn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+		btn.TextColor3 = Color3.fromRGB(0, 0, 0)
+		btn.Text = defaultText
+	else
+		btn.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
+		btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+		btn.Text = defaultText
+	end
+end
 
 VoidBtn.MouseButton1Click:Connect(function()
 	local char = lp.Character
@@ -133,11 +135,11 @@ VoidBtn.MouseButton1Click:Connect(function()
 	end
 end)
 
--- BYPASS SLINGSHOT BUTTON
+-- NEW BYPASS SLINGSHOT BUTTON
 
 local SlingBtn = Instance.new("TextButton", MainFrame)
 SlingBtn.Size = UDim2.new(0.9, 0, 0, 45)
-SlingBtn.Position = UDim2.new(0.05, 0, 0.67, 0)
+SlingBtn.Position = UDim2.new(0.05, 0, 0.68, 0)
 SlingBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
 SlingBtn.Font = Enum.Font.GothamBold
 SlingBtn.Text = "Bypass Slingshot"
@@ -222,6 +224,8 @@ SlingBtn.MouseButton1Click:Connect(function()
 		projectiles = {}
 	end
 end)
+
+-- ORIGINAL VOIDSPAM LOOP (UNCHANGED)
 
 local function fastRandom(mi, ma, dmi, dma)
 	local val = math.random(mi, ma)
