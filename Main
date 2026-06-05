@@ -1,261 +1,123 @@
-local lp = game:GetService("Players").LocalPlayer
-local players = game:GetService("Players")
-local runService = game:GetService("RunService")
+local player = game:GetService("Players").LocalPlayer
 local coreGui = game:GetService("CoreGui")
-local workspace = game:GetService("Workspace")
+local tweenService = game:GetService("TweenService")
 
-if coreGui:FindFirstChild("CheaterUi") then
-	coreGui.CheaterUi:Destroy()
+if coreGui:FindFirstChild("AquwaLua") then
+	coreGui.AquwaLua:Destroy()
 end
 
-local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "CheaterUi"
-ScreenGui.Parent = coreGui
-ScreenGui.ResetOnSpawn = false
+local gui = Instance.new("ScreenGui")
+gui.Name = "AquwaLua"
+gui.ResetOnSpawn = false
+gui.Parent = coreGui
 
-local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 300, 0, 170)
-MainFrame.Position = UDim2.new(0.5, -150, 0.5, -85)
-MainFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 12)
-MainFrame.BorderSizePixel = 0
-MainFrame.Active = true
-MainFrame.Draggable = true
-MainFrame.Parent = ScreenGui
+local main = Instance.new("Frame")
+main.Name = "Main"
+main.Size = UDim2.new(0, 360, 0, 230)
+main.Position = UDim2.new(0.5, -180, 0.5, -115)
+main.BackgroundColor3 = Color3.fromRGB(13, 14, 18)
+main.BorderSizePixel = 0
+main.Active = true
+main.Draggable = true
+main.Parent = gui
 
-local UICorner = Instance.new("UICorner", MainFrame)
-UICorner.CornerRadius = UDim.new(0, 15)
+Instance.new("UICorner", main).CornerRadius = UDim.new(0, 18)
 
-local UIStroke = Instance.new("UIStroke", MainFrame)
-UIStroke.Thickness = 3
-UIStroke.Color = Color3.fromRGB(255, 255, 255)
+local stroke = Instance.new("UIStroke", main)
+stroke.Thickness = 1.5
+stroke.Color = Color3.fromRGB(80, 170, 255)
+stroke.Transparency = 0.2
 
-local Title = Instance.new("TextLabel", MainFrame)
-Title.Size = UDim2.new(1, 0, 0, 40)
-Title.Position = UDim2.new(0, 0, 0, 0)
-Title.BackgroundTransparency = 1
-Title.Font = Enum.Font.GothamBold
-Title.Text = "Made By @aqwua"
-Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-Title.TextSize = 18
-Title.TextXAlignment = Enum.TextXAlignment.Center
-Title.TextYAlignment = Enum.TextYAlignment.Center
+local title = Instance.new("TextLabel", main)
+title.Size = UDim2.new(1, -50, 0, 45)
+title.Position = UDim2.new(0, 16, 0, 6)
+title.BackgroundTransparency = 1
+title.Font = Enum.Font.GothamBlack
+title.Text = "Aquwa Lua"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.TextSize = 24
+title.TextXAlignment = Enum.TextXAlignment.Left
 
-local CloseBtn = Instance.new("TextButton", MainFrame)
-CloseBtn.Name = "CloseBtn"
-CloseBtn.Size = UDim2.new(0, 30, 0, 30)
-CloseBtn.Position = UDim2.new(1, -35, 0, 8)
-CloseBtn.BackgroundTransparency = 1
-CloseBtn.Font = Enum.Font.GothamBold
-CloseBtn.Text = "X"
-CloseBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-CloseBtn.TextSize = 18
+local close = Instance.new("TextButton", main)
+close.Size = UDim2.new(0, 32, 0, 32)
+close.Position = UDim2.new(1, -42, 0, 12)
+close.BackgroundColor3 = Color3.fromRGB(25, 26, 32)
+close.Text = "×"
+close.Font = Enum.Font.GothamBold
+close.TextSize = 22
+close.TextColor3 = Color3.fromRGB(255, 255, 255)
+close.Parent = main
 
-local voidActive = false
-local slingActive = false
-local isRunning = true
-local preVoidCFrame = nil
+Instance.new("UICorner", close).CornerRadius = UDim.new(0, 10)
 
-local slingConn
-local childAddedConn
-local childRemovedConn
+local subtitle = Instance.new("TextLabel", main)
+subtitle.Size = UDim2.new(1, -32, 0, 25)
+subtitle.Position = UDim2.new(0, 16, 0, 48)
+subtitle.BackgroundTransparency = 1
+subtitle.Font = Enum.Font.Gotham
+subtitle.Text = "Smooth control panel"
+subtitle.TextColor3 = Color3.fromRGB(160, 170, 185)
+subtitle.TextSize = 14
+subtitle.TextXAlignment = Enum.TextXAlignment.Left
+subtitle.Parent = main
 
-local targetPos = CFrame.new(9000, 9000, 9000)
-local projectiles = {}
+local holder = Instance.new("Frame", main)
+holder.Size = UDim2.new(1, -32, 1, -90)
+holder.Position = UDim2.new(0, 16, 0, 82)
+holder.BackgroundTransparency = 1
 
-CloseBtn.MouseButton1Click:Connect(function()
-	isRunning = false
+local layout = Instance.new("UIListLayout", holder)
+layout.Padding = UDim.new(0, 10)
 
-	if voidActive and preVoidCFrame then
-		local char = lp.Character
-		local root = char and char:FindFirstChild("HumanoidRootPart")
+local function makeButton(text)
+	local btn = Instance.new("TextButton")
+	btn.Size = UDim2.new(1, 0, 0, 42)
+	btn.BackgroundColor3 = Color3.fromRGB(24, 26, 34)
+	btn.Text = text
+	btn.Font = Enum.Font.GothamBold
+	btn.TextSize = 15
+	btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+	btn.AutoButtonColor = false
+	btn.Parent = holder
 
-		if root then
-			root.Velocity = Vector3.new(0, 0, 0)
-			root.CFrame = preVoidCFrame
-		end
-	end
+	Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 12)
 
-	if slingConn then
-		slingConn:Disconnect()
-	end
+	local s = Instance.new("UIStroke", btn)
+	s.Thickness = 1
+	s.Color = Color3.fromRGB(45, 50, 65)
+	s.Transparency = 0.3
 
-	if childAddedConn then
-		childAddedConn:Disconnect()
-	end
-
-	if childRemovedConn then
-		childRemovedConn:Disconnect()
-	end
-
-	ScreenGui:Destroy()
-end)
-
--- ORIGINAL VOIDSPAM BUTTON (UNCHANGED)
-
-local VoidBtn = Instance.new("TextButton", MainFrame)
-VoidBtn.Size = UDim2.new(0.9, 0, 0, 45)
-VoidBtn.Position = UDim2.new(0.05, 0, 0.35, 0)
-VoidBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
-VoidBtn.Font = Enum.Font.GothamBold
-VoidBtn.Text = "Voidspam"
-VoidBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-VoidBtn.TextSize = 16
-
-Instance.new("UICorner", VoidBtn).CornerRadius = UDim.new(0, 8)
-
-local function updateButtonVisuals(btn, isEnabled, defaultText)
-	if isEnabled then
-		btn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-		btn.TextColor3 = Color3.fromRGB(0, 0, 0)
-		btn.Text = defaultText
-	else
-		btn.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
-		btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-		btn.Text = defaultText
-	end
-end
-
-VoidBtn.MouseButton1Click:Connect(function()
-	local char = lp.Character
-	local root = char and char:FindFirstChild("HumanoidRootPart")
-
-	voidActive = not voidActive
-	updateButtonVisuals(VoidBtn, voidActive, "Voidspam")
-
-	if voidActive then
-		if root then
-			preVoidCFrame = root.CFrame
-		end
-	else
-		if root and preVoidCFrame then
-			root.Velocity = Vector3.new(0, 0, 0)
-			root.CFrame = preVoidCFrame
-			preVoidCFrame = nil
-		end
-	end
-end)
-
--- NEW BYPASS SLINGSHOT BUTTON
-
-local SlingBtn = Instance.new("TextButton", MainFrame)
-SlingBtn.Size = UDim2.new(0.9, 0, 0, 45)
-SlingBtn.Position = UDim2.new(0.05, 0, 0.68, 0)
-SlingBtn.BackgroundColor3 = Color3.fromRGB(25, 25, 30)
-SlingBtn.Font = Enum.Font.GothamBold
-SlingBtn.Text = "Bypass Slingshot"
-SlingBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-SlingBtn.TextSize = 16
-
-Instance.new("UICorner", SlingBtn).CornerRadius = UDim.new(0, 8)
-
-SlingBtn.MouseButton1Click:Connect(function()
-	slingActive = not slingActive
-
-	updateButtonVisuals(SlingBtn, slingActive, "Bypass Slingshot")
-
-	if slingActive then
-		childAddedConn = workspace.ChildAdded:Connect(function(o)
-			if not o:IsA("BasePart") then
-				return
-			end
-
-			if o.Name == "CoreProjectile" then
-				projectiles[o] = true
-			elseif o.Name == "Part" then
-				task.defer(function()
-					if o and o.Parent and o.AssemblyLinearVelocity.Magnitude > 50 then
-						projectiles[o] = true
-					end
-				end)
-			end
-		end)
-
-		childRemovedConn = workspace.ChildRemoved:Connect(function(o)
-			projectiles[o] = nil
-		end)
-
-		slingConn = runService.Heartbeat:Connect(function()
-			pcall(function()
-				for _, p in pairs(players:GetPlayers()) do
-					if p ~= lp and p.Character then
-						local h = p.Character:FindFirstChild("HumanoidRootPart")
-
-						if h then
-							h.CFrame = targetPos
-							h.AssemblyLinearVelocity = Vector3.zero
-							h.AssemblyAngularVelocity = Vector3.zero
-						end
-					end
-				end
-
-				for _, o in pairs(workspace:GetChildren()) do
-					if o.Name == "CoreProjectile" and o:IsA("BasePart") then
-						o.CFrame = targetPos
-						o.AssemblyLinearVelocity = Vector3.zero
-					end
-				end
-
-				for p in pairs(projectiles) do
-					if p and p.Parent then
-						p.CFrame = targetPos
-						p.AssemblyLinearVelocity = Vector3.zero
-					else
-						projectiles[p] = nil
-					end
-				end
-			end)
-		end)
-	else
-		if slingConn then
-			slingConn:Disconnect()
-			slingConn = nil
-		end
-
-		if childAddedConn then
-			childAddedConn:Disconnect()
-			childAddedConn = nil
-		end
-
-		if childRemovedConn then
-			childRemovedConn:Disconnect()
-			childRemovedConn = nil
-		end
-
-		projectiles = {}
-	end
-end)
-
--- ORIGINAL VOIDSPAM LOOP (UNCHANGED)
-
-local function fastRandom(mi, ma, dmi, dma)
-	local val = math.random(mi, ma)
-
-	repeat
-		val = math.random(mi, ma)
-	until val < dmi or val > dma
-
-	return val
-end
-
-runService.Heartbeat:Connect(function()
-	if not isRunning or not voidActive then
-		return
-	end
-
-	pcall(function()
-		local char = lp.Character
-		local root = char and char:FindFirstChild("HumanoidRootPart")
-
-		if root then
-			root.CFrame = CFrame.new(
-				fastRandom(-2147483646, 2147483646, -1147483646, 1147483646),
-				fastRandom(-2147483646, 2147483646, -1147483646, 1147483646),
-				fastRandom(-2147483646, 2147483646, -1147483646, 1147483646)
-			) * CFrame.Angles(
-				math.rad(math.pi),
-				math.rad(math.pi),
-				math.rad(math.pi)
-			)
-		end
+	btn.MouseEnter:Connect(function()
+		tweenService:Create(btn, TweenInfo.new(0.15), {
+			BackgroundColor3 = Color3.fromRGB(35, 39, 52)
+		}):Play()
 	end)
+
+	btn.MouseLeave:Connect(function()
+		tweenService:Create(btn, TweenInfo.new(0.15), {
+			BackgroundColor3 = Color3.fromRGB(24, 26, 34)
+		}):Play()
+	end)
+
+	return btn
+end
+
+local tpBtn = makeButton("Teleport Mode")
+local protectBtn = makeButton("Protection Options")
+local logsBtn = makeButton("Logs")
+
+tpBtn.MouseButton1Click:Connect(function()
+	tpBtn.Text = "Teleport Mode: UI Only"
+end)
+
+protectBtn.MouseButton1Click:Connect(function()
+	protectBtn.Text = "Protection Options: UI Only"
+end)
+
+logsBtn.MouseButton1Click:Connect(function()
+	logsBtn.Text = "No logs yet"
+end)
+
+close.MouseButton1Click:Connect(function()
+	gui:Destroy()
 end)
